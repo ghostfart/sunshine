@@ -4,7 +4,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -26,6 +25,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -142,14 +142,7 @@ public class ForecastFragment extends Fragment {
             // Since this data is also sent in-order and the first day is always the current day, we're
             // going to take advantage of that to get a nice normalized UTC date for all of our weather.
 
-            Time dayTime = new Time();
-            dayTime.setToNow();
-
-            // we start at the day returned by local time. Otherwise this is a mess.
-            int julianStartDay = Time.getJulianDay(System.currentTimeMillis(), dayTime.gmtoff);
-
-            // now we work exclusively in UTC
-            dayTime = new Time();
+            GregorianCalendar currentTime = new GregorianCalendar();
 
             String[] resultStrs = new String[numDays];
             for (int i = 0; i < weatherArray.length(); i++) {
@@ -165,8 +158,8 @@ public class ForecastFragment extends Fragment {
                 // since most people won't read "1400356800" as this saturday.
                 long dateTime;
                 // Cheating to convert this to UTC time, which what we want anyhow
-                dateTime = dayTime.setJulianDay(julianStartDay + i);
-                day = getReadableDateString(dateTime);
+                currentTime.add(GregorianCalendar.DATE, 1);
+                day = getReadableDateString(currentTime.getTimeInMillis());
 
                 // description is a in a child array called "weather", which is 1 element long.
                 JSONObject weatherObject = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
