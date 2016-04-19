@@ -25,7 +25,10 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -34,6 +37,8 @@ public class ForecastFragment extends Fragment {
 
     public ForecastFragment() {
     }
+
+    ArrayAdapter<String> mForecastAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,15 +49,22 @@ public class ForecastFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String weekForecast[] = new String[6];
-        weekForecast[0] = new String("Today - Sunny - 88 / 63");
-        weekForecast[1] = new String("Tomorrow - Foggy - 70 / 46");
-        weekForecast[2] = new String("Wednesday - Cloudy - 72 / 63");
-        weekForecast[3] = new String("Thursday - Rainy - 64 / 51");
-        weekForecast[4] = new String("Friday - Foggy - 70 / 46");
-        weekForecast[5] = new String("Saturday - Sunny - 76 / 68");
+        String data[] = {
+                "Today - Sunny - 88 / 63",
+                "Tomorrow - Foggy - 70 / 46",
+                "Wednesday - Cloudy - 72 / 63",
+                "Thursday - Rainy - 64 / 51",
+                "Friday - Foggy - 70 / 46",
+                "Saturday - Sunny - 76 / 68"
+        };
+        List<String> weekForecast = new ArrayList<>(Arrays.asList(data));
+
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        ArrayAdapter<String> mForecastAdapter = new ArrayAdapter<>(getActivity(), R.layout.list_item_forecast, R.id.list_item_forecast_textview, weekForecast);
+        mForecastAdapter = new ArrayAdapter<>(
+                getActivity(),
+                R.layout.list_item_forecast,
+                R.id.list_item_forecast_textview,
+                weekForecast);
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
 
@@ -81,7 +93,6 @@ public class ForecastFragment extends Fragment {
     }
 
 
-
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
@@ -92,7 +103,7 @@ public class ForecastFragment extends Fragment {
         private int numDays = 7;
 
 
-        public FetchWeatherTask () {
+        public FetchWeatherTask() {
         }
 
         /**
@@ -106,20 +117,18 @@ public class ForecastFragment extends Fragment {
 
         /**
          * Prepare the weather high/lows presentation
-         *
          */
         private String formatHighLows(double high, double low) {
             // For presentation, assume the user doesn't care about tenths of a degree.
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
-            String highLowStr = roundedHigh + " / " + roundedLow;
-            return highLowStr;
+            return roundedHigh + " / " + roundedLow ;
         }
 
         /**
          * Take the STrign representing the complete forecast in JSON Format and pull out the
          * data we need to construct the Strings needed for the wireframes.
-         *
+         * <p/>
          * Fortunately parsing is easy: constructor takes the JSON string and converts it into an
          * Object hierarcy for us.
          */
@@ -174,15 +183,14 @@ public class ForecastFragment extends Fragment {
                 highAndLow = formatHighLows(high, low);
                 resultStrs[i] = day + " - " + description + " - " + highAndLow;
             }
-            for (String s : resultStrs) {
-                Log.v(LOG_TAG, "Forecast entry: " + s);
-            }
+//            for (String s : resultStrs) {
+//                Log.v(LOG_TAG, "Forecast entry: " + s);
+//            }
             return resultStrs;
         }
 
         private void setLocation(String postalCode) {
             location += postalCode + "," + "USA";
-            Log.v("Forecast Fragment", location);
         }
 
         private Uri.Builder buildURI() {
@@ -193,7 +201,6 @@ public class ForecastFragment extends Fragment {
             final String DAYS_PARAM = "cnt";
             final String APPID_PARAM = "appid";
             final String APPID_KEY = "5cc9498dd50e67b69228410a16209bdf";
-
 
 
             Uri.Builder builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon();
@@ -220,7 +227,7 @@ public class ForecastFragment extends Fragment {
                 // http://openweathermap.org/API#forecast
                 setLocation(params[0]);
                 uriBuilder = buildURI();
-                Log.v("Forecast Fragment", uriBuilder.toString());
+//                Log.v("Forecast Fragment", uriBuilder.toString());
                 URL url = new URL(uriBuilder.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
@@ -230,7 +237,7 @@ public class ForecastFragment extends Fragment {
 
                 // Read the input stream into a String
                 InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
+                StringBuilder buffer = new StringBuilder();
                 if (inputStream == null) {
                     // Nothing to do.
                     return null;
@@ -242,7 +249,8 @@ public class ForecastFragment extends Fragment {
                     // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
                     // But it does make debugging a *lot* easier if you print out the completed
                     // buffer for debugging.
-                    buffer.append(line + "\n");
+                    line += "\n";
+                    buffer.append(line);
                 }
 
                 if (buffer.length() == 0) {
@@ -269,12 +277,21 @@ public class ForecastFragment extends Fragment {
             }
             try {
                 return getWeatherDataFromJson(forecastJsonStr, 7);
-            } catch (JSONException e){
+            } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
             }
-            Log.v("Open Weather API Call",forecastJsonStr);
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            if (result != null) {
+                mForecastAdapter.clear();
+                for (String daysForecast : result) {
+                    mForecastAdapter.add(daysForecast);
+                }
+            }
         }
 
     }
