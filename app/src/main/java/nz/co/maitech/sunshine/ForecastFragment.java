@@ -1,5 +1,6 @@
 package nz.co.maitech.sunshine;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -73,6 +74,9 @@ public class ForecastFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 String toatMessage = mForecastAdapter.getItem(position);
+                Intent detailActivity = new Intent(getContext(), DetailActivity.class);
+                detailActivity.putExtra(Intent.EXTRA_TEXT, toatMessage);
+                startActivity(detailActivity);
                 Toast.makeText(getContext(),toatMessage, Toast.LENGTH_LONG).show();
             }
         });
