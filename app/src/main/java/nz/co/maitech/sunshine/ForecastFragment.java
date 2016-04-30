@@ -11,10 +11,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,7 +47,7 @@ public class ForecastFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         String data[] = {
                 "Today - Sunny - 88 / 63",
@@ -71,12 +69,14 @@ public class ForecastFragment extends Fragment {
         listView.setAdapter(mForecastAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String forecast = mForecastAdapter.getItem(position);
-                Toast.makeText(parent.getContext(), forecast, Toast.LENGTH_SHORT).show();
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                String toatMessage = mForecastAdapter.getItem(position);
+                Intent detailActivity = new Intent(getContext(), DetailActivity.class);
+                detailActivity.putExtra(Intent.EXTRA_TEXT, toatMessage);
+                startActivity(detailActivity);
+//                Toast.makeText(getContext(),toatMessage, Toast.LENGTH_LONG).show();
             }
         });
-
         return rootView;
     }
 
