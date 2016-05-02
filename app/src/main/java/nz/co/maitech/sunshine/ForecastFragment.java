@@ -96,6 +96,23 @@ public class ForecastFragment extends Fragment {
             updateWeather();
             return true;
         }
+
+        if (id == R.id.action_map_view) {
+            Intent gotoMap = new Intent(Intent.ACTION_VIEW);
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = prefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
+            Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                    .appendQueryParameter("q", location)
+                    .build();
+            gotoMap.setData(geoLocation);
+            if (gotoMap.resolveActivity(getContext().getPackageManager()) != null) {
+                startActivity(gotoMap);
+            } else {
+                Log.v("Placeholder Fragment", "No map app installed");
+            }
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
     }
 
