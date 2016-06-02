@@ -1,16 +1,13 @@
 package nz.co.maitech.sunshine;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -93,7 +90,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         // Inflate the menu; this adds items to the action bar if it is present.
         inflater.inflate(R.menu.forecast_fragment, menu);
-//        super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
@@ -105,21 +101,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
             updateWeather();
-            return true;
-        }
-        if (id == R.id.action_map_view) {
-            Intent gotoMap = new Intent(Intent.ACTION_VIEW);
-            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String location = prefs.getString(getString(R.string.pref_location_key), getString(R.string.pref_location_default));
-            Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
-                    .appendQueryParameter("q", location)
-                    .build();
-            gotoMap.setData(geoLocation);
-            if (gotoMap.resolveActivity(getContext().getPackageManager()) != null) {
-                startActivity(gotoMap);
-            } else {
-                Log.v("Placeholder Fragment", "No map app installed");
-            }
             return true;
         }
         return super.onOptionsItemSelected(item);

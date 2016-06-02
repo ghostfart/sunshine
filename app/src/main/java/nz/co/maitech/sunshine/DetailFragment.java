@@ -24,9 +24,9 @@ import nz.co.maitech.sunshine.data.WeatherContract;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment implements LoaderCallbacks<Cursor> {
+public class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
-    private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
+    private static final String LOG_TAG = DetailFragment.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = "#SunshineApp";
     private ShareActionProvider mShareActionProvider;
     private String mForecast;
@@ -65,7 +65,7 @@ public class DetailActivityFragment extends Fragment implements LoaderCallbacks<
     private TextView mWindView;
     private TextView mPressureView;
 
-    public DetailActivityFragment() {
+    public DetailFragment() {
         setHasOptionsMenu(true);
     }
 
@@ -125,16 +125,16 @@ public class DetailActivityFragment extends Fragment implements LoaderCallbacks<
         Log.v(LOG_TAG, "In onCreateLoader");
         Intent intent = getActivity().getIntent();
 
-        if (intent != null) {
-            return new CursorLoader(getActivity(),
-                    intent.getData(),
-                    FORECAST_COLUMNS,
-                    null,
-                    null,
-                    null);
-        } else {
+        if (intent == null || intent.getData() == null) {
             return null;
+
         }
+        return new CursorLoader(getActivity(),
+                intent.getData(),
+                FORECAST_COLUMNS,
+                null,
+                null,
+                null);
     }
 
     @Override

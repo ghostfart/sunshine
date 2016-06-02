@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="nz.co.maitech.sunshine.DetailActivityFragment"
+    tools:context=".DetailFragment"
     tools:showIn="@layout/activity_detail">
 
     <LinearLayout
@@ -17,7 +17,8 @@
         <TextView
             android:id="@+id/detail_day_textview"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:text="Hello World"/>
 
         <TextView
             android:id="@+id/detail_date_textview"
